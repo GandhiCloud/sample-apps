@@ -1,0 +1,15 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: __APP_NAME__-route
+  namespace: __NAMESPACE__
+  labels:
+    app: __APP_NAME__-app
+spec:
+  path: /
+  to:
+    kind: Service
+    name: __APP_NAME__-service
+    weight: 100
+  port:
+    targetPort: main-container

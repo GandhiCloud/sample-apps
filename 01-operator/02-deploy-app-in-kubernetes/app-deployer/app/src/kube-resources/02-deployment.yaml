@@ -1,0 +1,26 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: __APP_NAME__-deployment
+  namespace: __NAMESPACE__
+  labels:
+    app: __APP_NAME__-app
+    name: __APP_NAME__-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: __APP_NAME__-app
+      name: __APP_NAME__-deployment
+  template:
+    metadata:
+      labels:
+        app: __APP_NAME__-app
+        name: __APP_NAME__-deployment
+    spec:
+      containers:
+        - name: my-container
+          image: __IMAGE_NAME__:__IMAGE_TAG__
+          imagePullPolicy: Always
+          ports:
+            - containerPort: __CONTAINER_PORT__

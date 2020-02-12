@@ -1,0 +1,10 @@
+apiVersion: gancloud.com/v1alpha1
+kind: AppDeploy
+metadata:
+  name: wcare-mutual
+  namespace: g-appdeploy-pro
+spec:
+  replicaCount: 1
+  repository: gandhicloud/g-app-store
+  tag: latest
+  containerPort: 8080
