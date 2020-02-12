@@ -4,7 +4,7 @@ import yaml
 from os import path
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
-# from kubernetes.client import api_client
+from kubernetes.client import api_client
 # from kubernetes.client.api import core_v1_api
 
 def replaceInFile(filename, text_to_search, replacement_text):
@@ -42,11 +42,8 @@ def main():
     # configuration = kubernetes.client.Configuration()
     # k8s_api = kubernetes.client.AppsV1Api(kubernetes.client.ApiClient(configuration))
 
-    client.Configuration().host = "http://localhost:8001"
+    config.load_kube_config()
     v1 = client.CoreV1Api()
-    
-    # config.load_kube_config()
-    # v1 = client.CoreV1Api()
 
     namespace1="g-app-deploy-greetings-pro"
     appname1="g-app-deploy-greetings"

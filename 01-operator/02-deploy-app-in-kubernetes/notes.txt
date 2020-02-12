@@ -1,0 +1,61 @@
+sudo python -m pip install pyyaml
+
+sudo python -m pip install kubernetes
+
+
+https://www.programcreek.com/python/example/106724/kubernetes.config.load_kube_config
+
+
+
+config.load_kube_config(
+    os.path.join(os.environ["HOME"], '.kube/config'))
+
+v1 = client.CoreV1Api()
+
+
+Using the Python API Client
+https://www.ianlewis.org/en/quick-look-kubernetes-python-client
+
+
+https://www.linux.com/tutorials/enjoy-kubernetes-python/
+
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/main.py", line 96, in <module>
+    main()
+  File "/app/main.py", line 74, in main
+    resp = v1.create_namespace(body=yaml_data)
+  File "/usr/local/lib/python3.8/site-packages/kubernetes/client/apis/core_v1_api.py", line 5316, in create_namespace
+    (data) = self.create_namespace_with_http_info(body, **kwargs)
+  File "/usr/local/lib/python3.8/site-packages/kubernetes/client/apis/core_v1_api.py", line 5388, in create_namespace_with_http_info
+    return self.api_client.call_api('/api/v1/namespaces', 'POST',
+  File "/usr/local/lib/python3.8/site-packages/kubernetes/client/api_client.py", line 330, in call_api
+    return self.__call_api(resource_path, method,
+  File "/usr/local/lib/python3.8/site-packages/kubernetes/client/api_client.py", line 163, in __call_api
+    response_data = self.request(method, url,
+  File "/usr/local/lib/python3.8/site-packages/kubernetes/client/api_client.py", line 371, in request
+    return self.rest_client.POST(url,
+  File "/usr/local/lib/python3.8/site-packages/kubernetes/client/rest.py", line 260, in POST
+    return self.request("POST", url,
+  File "/usr/local/lib/python3.8/site-packages/kubernetes/client/rest.py", line 162, in request
+    r = self.pool_manager.request(method, url,
+  File "/usr/local/lib/python3.8/site-packages/urllib3/request.py", line 79, in request
+    return self.request_encode_body(
+  File "/usr/local/lib/python3.8/site-packages/urllib3/request.py", line 171, in request_encode_body
+    return self.urlopen(method, url, **extra_kw)
+  File "/usr/local/lib/python3.8/site-packages/urllib3/poolmanager.py", line 330, in urlopen
+    response = conn.urlopen(method, u.request_uri, **kw)
+  File "/usr/local/lib/python3.8/site-packages/urllib3/connectionpool.py", line 747, in urlopen
+    return self.urlopen(
+  File "/usr/local/lib/python3.8/site-packages/urllib3/connectionpool.py", line 747, in urlopen
+    return self.urlopen(
+  File "/usr/local/lib/python3.8/site-packages/urllib3/connectionpool.py", line 747, in urlopen
+    return self.urlopen(
+  File "/usr/local/lib/python3.8/site-packages/urllib3/connectionpool.py", line 719, in urlopen
+    retries = retries.increment(
+  File "/usr/local/lib/python3.8/site-packages/urllib3/util/retry.py", line 436, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='localhost', port=443): Max retries exceeded with url: /api/v1/namespaces (Caused by NewConnectionError('<urllib3.connection.VerifiedHTTPSConnection object at 0x7fef34ec8a60>: Failed to establish a new connection: [Errno 111] Connection refused'))

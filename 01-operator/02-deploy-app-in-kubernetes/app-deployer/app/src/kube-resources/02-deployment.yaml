@@ -1,26 +1,26 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: __APP_NAME__-deployment
-  namespace: __NAMESPACE__
+  name: g-app-deploy-greetings-deployment
+  namespace: g-app-deploy-greetings-pro
   labels:
-    app: __APP_NAME__-app
-    name: __APP_NAME__-deployment
+    app: g-app-deploy-greetings-app
+    name: g-app-deploy-greetings-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: __APP_NAME__-app
-      name: __APP_NAME__-deployment
+      app: g-app-deploy-greetings-app
+      name: g-app-deploy-greetings-deployment
   template:
     metadata:
       labels:
-        app: __APP_NAME__-app
-        name: __APP_NAME__-deployment
+        app: g-app-deploy-greetings-app
+        name: g-app-deploy-greetings-deployment
     spec:
       containers:
         - name: my-container
-          image: __IMAGE_NAME__:__IMAGE_TAG__
+          image: gandhicloud/g-app-store:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: __CONTAINER_PORT__
+            - containerPort: 8080

@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: __APP_NAME__-service
-  namespace: __NAMESPACE__
+  name: g-app-deploy-greetings-service
+  namespace: g-app-deploy-greetings-pro
   labels:
-    app: __APP_NAME__-app
-    name: __APP_NAME__-service
+    app: g-app-deploy-greetings-app
+    name: g-app-deploy-greetings-service
 spec:
   ports:
     - name: main-container
       port: 8080
-      targetPort: __CONTAINER_PORT__
+      targetPort: 8080
   selector:
-    name: __APP_NAME__-deployment
+    name: g-app-deploy-greetings-deployment

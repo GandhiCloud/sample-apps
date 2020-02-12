@@ -2,6 +2,6 @@
 
 cd ..
 
-docker build -f docker/Dockerfile -t gandhicloud/g-appdeploy-operator .
+docker build -t gandhicloud/g-appdeploy-operator .
 
 docker push gandhicloud/g-appdeploy-operator:latest
