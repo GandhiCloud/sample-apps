@@ -1,9 +1,11 @@
-apiVersion: gancloud.com/v1alpha1
+apiVersion: gancloud.com/v1
 kind: AppDeploy
 metadata:
   name: wcare-mutual
   namespace: g-appdeploy-pro
 spec:
+  image1: 1a
+  image2: 1b
   replicaCount: 1
   repository: gandhicloud/g-app-store
   tag: latest
