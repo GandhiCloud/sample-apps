@@ -1,0 +1,22 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: students.students.operator.redhatgov.io
+spec:
+  group: students.operator.redhatgov.io
+  names:
+    kind: Student
+    listKind: StudentList
+    plural: students
+    singular: student
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      type: object
+      x-kubernetes-preserve-unknown-fields: true
+  versions:
+  - name: v1
+    served: true
+    storage: true

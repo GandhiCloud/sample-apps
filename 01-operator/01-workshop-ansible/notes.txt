@@ -1,0 +1,251 @@
+https://itnext.io/a-practical-kubernetes-operator-using-ansible-an-example-d3a9d3674d5b
+
+
+operator-sdk new workshop-operator \
+--api-version=workshops.operator.redhatgov.io/v1 \
+--kind=Workshop \
+--type=ansible \
+--cluster-scoped
+
+not working...so removed the --cluster 
+
+operator-sdk new workshop-operator \
+--api-version=workshops.operator.redhatgov.io/v1 \
+--kind=Workshop \
+--type=ansible \
+
+
+operator-sdk build gandhicloud/workshop-operator:v1
+
+docker push gandhicloud/workshop-operator
+
+
+sed -i "" 's|{{ REPLACE_IMAGE }}|gandhicloud/workshop-operator:v1|g' deploy/operator.yaml
+
+sed -i "" 's|REPLACE_NAMESPACE|g-workshop-operator|g' deploy/role_binding.yaml
+
+sed -i "" 's|{{ pull_policy\|default('\''Always'\'') }}|Always|g' deploy/operator.yaml
+
+
+
+oc new-project g-workshop-operator
+
+You can add applications to this project with the 'new-app' command. For example, try:
+
+oc new-app centos/ruby-25-centos7~https://github.com/sclorg/ruby-ex.git
+
+to build a new example application in Ruby.
+
+
+oc create -f deploy/service_account.yaml
+
+
+Edit the role.yaml...with more permissions... Kindly note the Kind should be Role not the ClusterRole
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: workshop-operator
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+
+oc create -f deploy/role.yaml
+oc create -f deploy/role_binding.yaml
+
+oc create -f deploy/crds/workshops.operator.redhatgov.io_workshops_crd.yaml
+oc create -f deploy/operator.yaml
+
+
+oc get deployment
+
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+workshop-operator   0/1     1            0           5m13s
+
+Change the size to 1 in the below file
+workshops.operator.redhatgov.io_v1_workshop_cr.yaml
+
+
+oc create -f deploy/crds/workshops.operator.redhatgov.io_v1_workshop_cr.yaml
+
+oc create -f deploy/crds/workshops.operator.redhatgov.io_v1_workshop2_cr.yaml
+
+
+create new directory at the root level 
+mkdir playbooks
+
+create workshop.yml file with the below content
+---- 
+- hosts: localhost  
+  roles:    
+    - workshop
+
+replace role with playbook in watches.yaml. 
+
+
+update the Dockerfile to add playbook
+
+oc create -f deploy/crds/workshops.operator.redhatgov.io_v1_workshop2_cr.yaml
+
+operator-sdk build gandhicloud/workshop-operator:v1
+
+docker push gandhicloud/workshop-operator
+
+
+
+operator-sdk add crd \
+--api-version students.operator.redhatgov.io/v1 \
+--kind Student
+
+cd roles
+
+brew install python
+
+Error: An unexpected error occurred during the `brew link` step
+Error: Permission denied @ dir_s_mkdir - /usr/local/Frameworks
+
+sudo mkdir /usr/local/Frameworks
+sudo chown $(whoami):admin /usr/local/Frameworks
+brew link python
+
+https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#from-pip
+
+$ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+$ python get-pip.py --user
+
+$ pip3 install --user ansible
+
+ansible-galaxy init student
+
+---------------------------------------------------------------------------
+https://crunchify.com/how-to-install-ansible-on-macos/
+
+Step-1
+sudo easy_install pip
+
+Installed /Library/Python/2.7/site-packages/pip-19.0.3-py2.7.egg
+Processing dependencies for pip
+Finished processing dependencies for pip
+
+Step-2
+sudo pip install ansible
+
+Successfully installed MarkupSafe-1.1.0 PyYAML-3.13 ansible-2.7.8 asn1crypto-0.24.0 bcrypt-3.1.6 cffi-1.12.1 cryptography-2.5 enum34-1.1.6 ipaddress-1.0.22 jinja2-2.10 paramiko-2.4.2 pyasn1-0.4.5 pycparser-2.19 pynacl-1.3.0
+
+Step-3
+ansible --version
+ansible 2.9.4
+  config file = None
+  configured module search path = [u'/Users/jeyagandhi/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
+  ansible python module location = /Library/Python/2.7/site-packages/ansible
+  executable location = /usr/local/bin/ansible
+  python version = 2.7.16 (default, Oct 17 2019, 17:14:30) [GCC 4.2.1 Compatible Apple LLVM 11.0.0 (clang-1100.0.32.4) (-macos10.15-objc-s
+
+
+
+
+https://opensource.com/article/19/5/python-3-default-mac
+For further reference - https://opensource.com/article/19/5/python-3-default-mac
+sage of pyenv to manage Python environments is recommended.
+
+$ brew install pyenv
+
+$ pyenv install 3.7.3
+
+$ pyenv global 3.7.3
+
+$ pyenv version
+
+Refresh the current terminal and check
+
+$ python -V
+
+It should give Python 3.7.3
+
+This way you are good to go.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Add the following content to roles/students/tasks/main.yml.
+
+- version: v1
+  group: operator.redhatgov.io
+  kind: Student
+  playbook: /opt/ansible/playbooks/student.yml
+
+
+  Next, create playbooks/student.yml with the following content.
+
+---
+- hosts: localhost
+  roles:
+    - student
+
+
+
+    With our new student role and playbook created, we need to tell watches.yaml to watch our new student content.
+
+
+- version: v1
+  group: workshops.operator.redhatgov.io
+  kind: Workshop
+  playbook: /opt/ansible/playbooks/workshop.yml
+- version: v1
+  group: operator.redhatgov.io
+  kind: Student
+  playbook: /opt/ansible/playbooks/student.yml    
+
+
+operator-sdk build gandhicloud/workshop-operator:v1
+
+docker push gandhicloud/workshop-operator
+
+
+
+
+oc delete deployment workshop-operator
+
+oc create -f deploy/operator.yaml
+
+oc create -f deploy/crds/students.operator.redhatgov.io_students_crd.yaml
+
+modify the students.operator.redhatgov.io_v1_student_cr.yaml size =1
+
+apiVersion: student.operator.redhatgov.io/v1
+kind: Student
+metadata:
+  name: example-student
+spec:
+  # Add fields here
+  size: 1
+
+
+cat deploy/crds/students.operator.redhatgov.io_v1_student_cr.yaml
+
+
+
+
+
+irst, edit roles/workshop/tasks/main.yml to contain the following code. This new task will take a variable, num_students, and creates the corresponding number of student objects.
+
+--- - name: Create project for global workshop content
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ meta.name }}"
+
+- name: Create students for workshop
+  k8s:
+    definition: "{{ lookup('template', 'student.yaml.j2') | from_yaml }}"
+  vars:
+    student_number: "{{ item }}"
+  loop: "{{ range(1, num_students + 1) | list }}"
+  when: num_students is defined
+
+
+  

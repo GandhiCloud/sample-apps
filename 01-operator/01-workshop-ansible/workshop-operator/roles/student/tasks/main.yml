@@ -1,0 +1,8 @@
+---
+# tasks file for student
+
+- name: Create project for student 
+  k8s:    
+    api_version: v1    
+    kind: Namespace
+    name: "{{ meta.name }}"
