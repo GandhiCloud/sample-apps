@@ -14,6 +14,7 @@ spec:
       labels:
         app: appdeploy-operator
     spec:
+      serviceAccountName: appdeploy-serviceaccount
       containers:
       - name: proxycontainer
         image: lachlanevenson/k8s-kubectl
