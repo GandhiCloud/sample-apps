@@ -1,0 +1,125 @@
+https://medium.com/faun/writing-your-first-kubernetes-operator-8f3df4453234
+
+https://developers.redhat.com/blog/2019/10/04/getting-started-with-golang-operators-by-using-operator-sdk/
+
+https://github.com/operator-framework/getting-started
+
+Creating a New Project
+https://golang.github.io/dep/docs/new-project.html
+
+https://github.com/golang/go/wiki/SettingGOPATH
+
+operator-sdk new podset-gan-operator
+
+http://noelyahan.blogspot.com/2018/02/mystery-of-gopath.html
+
+go env
+
+https://golang.github.io/dep/docs/installation.html
+
+----------------------
+https://github.com/xcoulon/podset-operator/blob/master/pkg/controller/podset/podset_controller.go#L86
+https://github.com/xcoulon/podset-operator
+--------------------------------------------------------------------------------------------------------------------------
+$ brew install operator-sdk
+$ brew install dep
+$ brew upgrade dep
+
+export GOPATH=/Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go
+mkdir $GOPATH/src
+cd $GOPATH/src
+operator-sdk new podset-operator
+cd podset-operator
+
+# Add a new API for the custom resource PodSet
+$ operator-sdk add api --api-version=app.example.com/v1alpha1 --kind=PodSet
+
+# Add a new controller that watches for PodSet
+$ operator-sdk add controller --api-version=app.example.com/v1alpha1 --kind=PodSet
+
+add the below entry into podset_controller.go
+/pkg/apis/app/v1alpha1/podset_types.go
+type PodSetSpec struct {
+  Replicas int32 `json:"replicas"`
+}type PodSetStatus struct {
+  PodNames []string `json:"podNames"`
+}
+
+operator-sdk generate k8s
+$ operator-sdk generate crds
+
+# build the Docker image using the Operator SDK
+$ operator-sdk build gandhicloud/podset-operator
+
+# push the image to Quay.io
+$ docker push gandhicloud/podset-operator
+
+# On Linux:
+$ sed -i 's|REPLACE_IMAGE|gandhicloud/podset-operator|g' deploy/operator.yaml
+
+
+oc new-project gan-podset-operator
+
+# Setup Service Account
+$ oc create -f deploy/service_account.yaml
+
+# Setup RBAC
+$ oc create -f deploy/role.yaml
+$ oc create -f deploy/role_binding.yaml
+
+# Setup the CRD
+$ oc create -f deploy/crds/app.example.com_podsets_crd.yaml
+$ oc apply -f deploy/crds/app.example.com_podsets_crd.yaml
+
+# Deploy the podset-operator
+$ oc create -f deploy/operator.yaml
+oc apply -f deploy/operator.yaml
+
+# check the CRD
+$ oc get crd podsets.app.example.com
+NAME                      
+podsets.app.example.com   
+
+# check the operator controller
+$ oc get pods
+NAME                               READY     STATUS   
+podset-operator-685bbbc858-d4gf7   1/1       Running   
+
+# check if there's a CR using the CRD fullname...
+$ oc get podsets.app.example.com
+No resources found.# ... or one of its aliases
+
+$ oc get podsets
+No resources found.
+
+$ echo "apiVersion: app.example.com/v1alpha1
+kind: PodSet
+metadata:
+  name: example-podset
+spec:
+  replicas: 3" | oc create -f -
+
+And now, we can check the pods in the namespace:
+Jeyas-MacBook-Pro:podset-operator jeyagandhi$ oc get pods -l app=example-podset
+NAME                 READY   STATUS    RESTARTS   AGE
+example-podset-pod   1/1     Running   0          26s
+
+
+
+oc describe podset/example-podset
+
+
+operator-sdk generate csv --csv-version 0.0.1 --update-crds
+
+
+------------------------------------------------------------------------
+Bash
+
+Edit your ~/.bash_profile to add the following line:
+
+export GOPATH=$HOME/go
+
+Save and exit your editor. Then, source your ~/.bash_profile.
+
+source ~/.bash_profile
+--------

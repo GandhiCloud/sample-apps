@@ -29,7 +29,7 @@ def replaceInFile(filename, text_to_search, replacement_text):
     with open(filename, 'w') as file:
         file.write(filedata)
 
-def main():
+def main123():
 
     config.load_incluster_config()
 
@@ -39,25 +39,11 @@ def main():
     for i in ret.items:
         print("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
         
-def main1():
+def main():
 
-    # ApiClient client = Config.defaultClient();
-    # Configuration.setDefaultApiClient(client);
-    # CoreV1Api coreApi = new CoreV1Api(client);
-
-    # client = api_client.ApiClient(configuration=self.config)
-    # k8s_api = core_v1_api.CoreV1Api(client)
-
-    # config.load_kube_config()
-    # configuration = kubernetes.client.Configuration()
-    # k8s_api = kubernetes.client.AppsV1Api(kubernetes.client.ApiClient(configuration))
-
-    client.Configuration().host = "http://localhost:8001"
+    config.load_incluster_config()
     v1 = client.CoreV1Api()
     
-    # config.load_kube_config()
-    # v1 = client.CoreV1Api()
-
     namespace1="g-app-deploy-greetings-pro"
     appname1="g-app-deploy-greetings"
     imagename1="gandhicloud/g-app-store"

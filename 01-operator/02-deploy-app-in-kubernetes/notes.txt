@@ -19,6 +19,9 @@ https://www.ianlewis.org/en/quick-look-kubernetes-python-client
 
 https://www.linux.com/tutorials/enjoy-kubernetes-python/
 
+goood python.....
+https://medium.com/programming-kubernetes/building-stuff-with-the-kubernetes-api-part-3-using-python-aea5ab16f627
+https://unofficial-kubernetes.readthedocs.io/en/latest/admin/kube-proxy/
 
 
 During handling of the above exception, another exception occurred:

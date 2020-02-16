@@ -1,5 +1,5 @@
 https://itnext.io/a-practical-kubernetes-operator-using-ansible-an-example-d3a9d3674d5b
-
+https://itnext.io/building-an-operator-for-kubernetes-with-the-sample-controller-b4204be9ad56
 
 operator-sdk new workshop-operator \
 --api-version=workshops.operator.redhatgov.io/v1 \
@@ -248,4 +248,20 @@ irst, edit roles/workshop/tasks/main.yml to contain the following code. This new
   when: num_students is defined
 
 
-  
+  operator-sdk build gandhicloud/workshop-operator:v1
+
+docker push gandhicloud/workshop-operator
+
+
+oc delete deployment workshop-operator
+oc delete workshop example-workshop
+oc delete workshop another-workshop
+oc delete student example-student
+
+
+
+
+oc create -f deploy/operator.yaml
+oc get pods
+
+oc create -f deploy/crds/workshops.operator.redhatgov.io_v1_workshop_cr.yaml
