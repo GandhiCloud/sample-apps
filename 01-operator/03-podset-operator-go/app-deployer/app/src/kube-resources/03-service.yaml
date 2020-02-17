@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: g-podset-operator-greetings-service
+  namespace: g-podset-operator-greetings-pro
+  labels:
+    app: g-podset-operator-greetings-app
+    name: g-podset-operator-greetings-service
+spec:
+  ports:
+    - name: main-container
+      port: 8080
+      targetPort: 8080
+  selector:
+    name: g-podset-operator-greetings-deployment

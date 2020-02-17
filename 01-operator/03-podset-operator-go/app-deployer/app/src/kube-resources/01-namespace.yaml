@@ -1,0 +1,7 @@
+  
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: g-podset-operator-greetings-pro
+  labels:
+    app:  g-podset-operator-greetings-app

@@ -31,6 +31,8 @@ cd $GOPATH/src
 operator-sdk new podset-operator
 cd podset-operator
 
+cd /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/src/podset-operator
+
 # Add a new API for the custom resource PodSet
 $ operator-sdk add api --api-version=app.example.com/v1alpha1 --kind=PodSet
 
@@ -52,7 +54,8 @@ $ operator-sdk generate crds
 $ operator-sdk build gandhicloud/podset-operator
 
 # push the image to Quay.io
-$ docker push gandhicloud/podset-operator
+$ docker push gandhicloud/podset-operator89\
+0 
 
 # On Linux:
 $ sed -i 's|REPLACE_IMAGE|gandhicloud/podset-operator|g' deploy/operator.yaml
@@ -160,6 +163,8 @@ https://github.com/redhat-developer/jenkins-operator
 https://github.com/operator-framework/community-operators/blob/master/docs/contributing.md
 If you are using Operator-SDK to generate the files the bundle directory my-operator-bundle/ will be like my-operator/deploy/olm-catalog/my-operator/
 
+
+cd /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/src/podset-operator
 operator-courier verify --ui_validate_io deploy/olm-catalog/podset-operator/
 
 If there is no output, the bundle passed operator-courier validation
@@ -194,7 +199,7 @@ https://quay.io/application/gandhicloudquay/podset-operator
 
 make the application as public in the quay.io.
 
-
+cd /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment
 oc apply -f operator-source.yaml
 
 oc delete -f operator-source.yaml
@@ -204,15 +209,18 @@ oc get operatorsource podset-operator -n openshift-marketplace
 oc new-project g-operators
 
 
+cd /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment
+oc apply -f operator-cr.yaml
 
+oc project g-operators
 
-echo "apiVersion: app.example.com/v1alpha1
-kind: PodSet
-metadata:
-  name: example-podset
-spec:
-  replicas: 3" | oc create -f -
+oc get all
 
+operator-cr.yaml
+kubectl delete -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment/operator-cr.yaml
+
+operator-source.yaml
+kubectl delete -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment/operator-source.yaml
 
 ------------------------------------------------------------------------
 Bash

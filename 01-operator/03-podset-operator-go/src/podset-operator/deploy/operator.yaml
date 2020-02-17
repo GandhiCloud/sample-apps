@@ -13,6 +13,9 @@ spec:
         name: podset-operator
     spec:
       serviceAccountName: podset-operator
+      volumes:
+        - name: html
+          emptyDir: {}
       containers:
         - name: podset-operator
           # Replace this with the built image name
@@ -31,13 +34,28 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "podset-operator"
-        - name: proxycontainer
-          image: lachlanevenson/k8s-kubectl
-          command: ["kubectl","proxy","--port=8001"]
         - name: app
-          image: gandhicloud/g-appdeploy-operator
+          image: gandhicloud/podset-operator-main
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/html
           env:
             - name: res_namespace
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+        # - name: proxycontainer
+        #   image: lachlanevenson/k8s-kubectl
+        #   command: ["kubectl","proxy","--port=8001"]
+        - name: kubectl-apply-deployment-files
+          image: lachlanevenson/k8s-kubectl
+          volumeMounts:
+            - name: html
+              mountPath: /html
+          command: ["kubectl"]
+          args:
+            - "apply"
+            - "-f"
+            - "html"
+            - "-R"
+            - "--validate=false"          

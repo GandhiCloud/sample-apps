@@ -1,0 +1,26 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: g-podset-operator-greetings-deployment
+  namespace: g-podset-operator-greetings-pro
+  labels:
+    app: g-podset-operator-greetings-app
+    name: g-podset-operator-greetings-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: g-podset-operator-greetings-app
+      name: g-podset-operator-greetings-deployment
+  template:
+    metadata:
+      labels:
+        app: g-podset-operator-greetings-app
+        name: g-podset-operator-greetings-deployment
+    spec:
+      containers:
+        - name: my-container
+          image: gandhicloud/g-app-store:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
