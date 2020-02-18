@@ -170,7 +170,7 @@ remove the   provider: {} found in the csv..yaml file (3rd line from last)
 If there is no output, the bundle passed operator-courier validation
 
 docker login quay.io
-export QUAY_TOKEN="basic A1/QCZznB7LB0dET/jmEDPSlHG1SjyERv/cLF9kSKUAD9YzoiOVPqNe0gSEavaBV"
+export QUAY_TOKEN="basic A1/vaBV"
 
 export QUAY_USERNAME=gandhicloudquay
 export QUAY_PASSWORD=A1YzoiOVPqNe0gSEavaBV

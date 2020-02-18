@@ -1,0 +1,93 @@
+https://medium.com/faun/writing-your-first-kubernetes-operator-8f3df4453234
+https://github.com/operator-framework/community-operators/blob/master/docs/testing-operators.md
+
+
+
+
+export GOPATH=/Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/04-greetings-operator-go
+mkdir $GOPATH/src
+cd $GOPATH/src
+operator-sdk new greetings-operator
+cd greetings-operator
+
+jeyas-mbp:src jeyagandhi$ tree -I vendor
+.
+└── greetings-operator
+    ├── build
+    │   ├── Dockerfile
+    │   └── bin
+    │       ├── entrypoint
+    │       └── user_setup
+    ├── cmd
+    │   └── manager
+    │       └── main.go
+    ├── deploy
+    │   ├── operator.yaml
+    │   ├── role.yaml
+    │   ├── role_binding.yaml
+    │   └── service_account.yaml
+    ├── go.mod
+    ├── go.sum
+    ├── pkg
+    │   ├── apis
+    │   │   └── apis.go
+    │   └── controller
+    │       └── controller.go
+    ├── tools.go
+    └── version
+        └── version.go
+
+
+cd greetings-operator/
+
+
+Adding a CRD and a controller
+
+# Add a new API for the custom resource PodSet
+$ operator-sdk add api --api-version=app.example.com/v1alpha1 --kind=Greetings
+
+# Add a new controller that watches for PodSet
+$ operator-sdk add controller --api-version=app.example.com/v1alpha1 --kind=Greetings
+
+cat deploy/crds/app.example.com_greetings_crd.yaml 
+cat deploy/crds/app.example.com_v1alpha1_greetings_cr.yaml
+
+
+Add the below 2 fields in pkg/apis/app/v1alpha1/greetings_types.go
+
+type GreetingsSpec struct {
+  Replicas int32 `json:"replicas"`
+}
+
+type GreetingsStatus struct {
+  PodNames []string `json:"podNames"`
+}
+
+
+operator-sdk generate k8s
+operator-sdk generate crds
+
+
+operator-sdk olm-catalog gen-csv --csv-version 0.0.1 --update-crds
+operator-courier verify --ui_validate_io deploy/olm-catalog/greetings-operator/
+
+operator-sdk build gandhicloud/my-greetings-operator
+
+export QUAY_USERNAME=gandhicloudquay
+export QUAY_PASSWORD=A1/QCZznBV
+
+QUAY_TOKEN=$(curl -sH "Content-Type: application/json" -XPOST https://quay.io/cnr/api/v1/users/login -d '
+{
+    "user": {
+        "username": "'"${QUAY_USERNAME}"'",
+        "password": "'"${QUAY_PASSWORD}"'"
+    }
+}' | jq -r '.token')
+
+export OPERATOR_DIR=deploy/olm-catalog/greetings-operator/
+export QUAY_NAMESPACE=gandhicloudquay
+export PACKAGE_NAME=greetings-operator
+export PACKAGE_VERSION=0.0.1
+export TOKEN=$QUAY_TOKEN
+operator-courier push "$OPERATOR_DIR" "$QUAY_NAMESPACE" "$PACKAGE_NAME" "$PACKAGE_VERSION" "$TOKEN"
+
