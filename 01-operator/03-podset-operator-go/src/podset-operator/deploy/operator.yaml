@@ -21,7 +21,7 @@ spec:
           # Replace this with the built image name
           image: gandhicloud/podset-operator
           command:
-          - podset-operator
+            - podset-operator
           imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE
@@ -36,6 +36,20 @@ spec:
               value: "podset-operator"
         - name: app
           image: gandhicloud/podset-operator-main
+          command: 
+            - /bin/bash
+            args:
+              - -c
+              - |
+                echo "Started ......"
+
+                cp /app-files/* /html
+
+                echo 'after copyy .........'
+                ls -la /app-files/
+                ls -la /html
+      
+                echo "Completed ......" 
           volumeMounts:
             - name: html
               mountPath: /usr/share/html
@@ -58,4 +72,4 @@ spec:
             - "-f"
             - "html"
             - "-R"
-            - "--validate=false"          
+            - "--validate=false"

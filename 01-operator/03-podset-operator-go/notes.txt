@@ -1,7 +1,9 @@
 https://medium.com/faun/writing-your-first-kubernetes-operator-8f3df4453234
+https://github.com/operator-framework/community-operators/blob/master/docs/testing-operators.md
+
 
 https://developers.redhat.com/blog/2019/10/04/getting-started-with-golang-operators-by-using-operator-sdk/
-
+https://github.com/operator-framework/operator-sdk/
 https://github.com/operator-framework/getting-started
 
 Creating a New Project
@@ -31,8 +33,6 @@ cd $GOPATH/src
 operator-sdk new podset-operator
 cd podset-operator
 
-cd /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/src/podset-operator
-
 # Add a new API for the custom resource PodSet
 $ operator-sdk add api --api-version=app.example.com/v1alpha1 --kind=PodSet
 
@@ -48,14 +48,13 @@ type PodSetSpec struct {
 }
 
 operator-sdk generate k8s
-$ operator-sdk generate crds
+operator-sdk generate crds
 
 # build the Docker image using the Operator SDK
 $ operator-sdk build gandhicloud/podset-operator
 
 # push the image to Quay.io
-$ docker push gandhicloud/podset-operator89\
-0 
+$ docker push gandhicloud/podset-operator
 
 # On Linux:
 $ sed -i 's|REPLACE_IMAGE|gandhicloud/podset-operator|g' deploy/operator.yaml
@@ -112,17 +111,16 @@ example-podset-pod   1/1     Running   0          26s
 oc describe podset/example-podset
 
 
-operator-sdk generate csv --csv-version 0.0.1 --update-crds
+operator-sdk generate csv --csv-version 0.0.2 --update-crds
 operator-sdk generate csv --update-crds
 
 ------------------------------------------------------------------------
 https://redhat-connect.gitbook.io/certified-operator-guide/ocp-deployment/operator-metadata/creating-the-csv
 https://redhat-connect.gitbook.io/certified-operator-guide/ocp-deployment/openshift-deployment
-
+http://workshop.coreostrain.me/lab/operatorsdk/podset/
 
 https://github.com/operator-framework/community-operators/blob/master/docs/testing-operators.md
 
-good
 https://docs.openshift.com/container-platform/4.1/applications/operator_sdk/osdk-generating-csvs.html
 
 https://github.com/operator-framework/operator-courier
@@ -167,6 +165,8 @@ If you are using Operator-SDK to generate the files the bundle directory my-oper
 cd /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/src/podset-operator
 operator-courier verify --ui_validate_io deploy/olm-catalog/podset-operator/
 
+remove the   provider: {} found in the csv..yaml file (3rd line from last)
+
 If there is no output, the bundle passed operator-courier validation
 
 docker login quay.io
@@ -186,7 +186,7 @@ QUAY_TOKEN=$(curl -sH "Content-Type: application/json" -XPOST https://quay.io/cn
 export OPERATOR_DIR=deploy/olm-catalog/podset-operator/
 export QUAY_NAMESPACE=gandhicloudquay
 export PACKAGE_NAME=podset-operator
-export PACKAGE_VERSION=0.0.1
+export PACKAGE_VERSION=0.0.3
 export TOKEN=$QUAY_TOKEN
 
 
@@ -217,11 +217,79 @@ oc project g-operators
 oc get all
 
 operator-cr.yaml
-kubectl delete -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment/operator-cr.yaml
+oc apply -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment/operator-cr.yaml
+
+tol change to v0.0.2 version...
+
+operator-sdk olm-catalog gen-csv --csv-version 0.0.1 --update-crds
+updated the csv file...to the tags...
+
+change the 
+- currentCSV: podset-operator.v0.0.1
+ into 
+
+ - currentCSV: podset-operator.v0.0.2
+
+in 
+podset-operator.package.yaml
+
+
+operator-courier push "$OPERATOR_DIR" "$QUAY_NAMESPACE" "$PACKAGE_NAME" "$PACKAGE_VERSION" "$TOKEN"
+
+oc get describe  podset-operator -n openshift-marketplace
+
+oc get clusterserviceversion
+
+
+don't use kubectl apply...use oc apply...
+------------------------------------------------------------------------
+
+https://github.com/operator-framework/operator-sdk/blob/master/doc/user/olm-catalog/generating-a-csv.md
+
+
+operator-sdk generate csv --csv-version 0.0.3  --from-version 0.0.2
+
+operator-sdk olm-catalog csv --csv-version 0.0.3 --from-version 0.0.2
+
+operator-sdk olm-catalog gen-csv --csv-version 0.0.1 --update-crds
+operator-sdk olm-catalog gen-csv --csv-version 0.0.3 --from-version 0.0.2
+
+
+operator-courier verify --ui_validate_io deploy/olm-catalog/podset-operator/
+export PACKAGE_VERSION=0.0.3
+
+
+operator-courier push "$OPERATOR_DIR" "$QUAY_NAMESPACE" "$PACKAGE_NAME" "$PACKAGE_VERSION" "$TOKEN"
+
+oc apply -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment/operator-source.yaml
+
+
+------------------------------------------------------------------------
+
+operator-cr.yaml
+oc apply -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment/operator-cr.yaml
+operator-source.yaml
+oc apply -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment/operator-source.yaml
+
+operator-cr.yaml
+oc delete -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment/operator-cr.yaml
 
 operator-source.yaml
-kubectl delete -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment/operator-source.yaml
+oc delete -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/03-podset-operator-go/deployment/operator-source.yaml
+------------------------------------------------------------------------
+oc get subscription jaeger -n openshift-operators -o yaml | grep currentCSV
+  currentCSV: jaeger-operator.v1.8.2
 
+oc describe installplan install-bh88v
+oc describe subscription podset-operator
+oc get subscription podset-operator
+oc get clusterserviceversion
+
+oc delete subscription podset-operator
+
+
+
+    Message:               error creating csv podset-operator.v0.0.3: ClusterServiceVersion.operators.coreos.com "podset-operator.v0.0.3" is invalid: []: Invalid value: map[string]interface {}{"apiVersion":"operators.coreos.com/v1alpha1", "kind":"ClusterServiceVersion", "metadata":map[string]interface {}{"annotations":map[string]interface {}{"alm-examples":"[\n  {\n    \"apiVersion\": \"app.example.com/v1alpha1\",\n    \"kind
 ------------------------------------------------------------------------
 Bash
 

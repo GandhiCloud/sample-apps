@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-
 echo 'deploy process started .............................'
 
-ls -l /app-files/
+ls -la /app-files/
 cp /app-files/* /html
 
 echo 'after copyy .........'
