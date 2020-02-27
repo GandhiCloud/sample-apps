@@ -1,0 +1,313 @@
+@@ -0,0 +1,93 @@
+https://medium.com/faun/writing-your-first-kubernetes-operator-8f3df4453234
+https://github.com/operator-framework/community-operators/blob/master/docs/testing-operators.md
+
+https://github.com/operator-framework/operator-sdk/
+https://github.com/operator-framework/getting-started/blob/master/README.md
+https://github.com/operator-framework/operator-sdk/blob/master/doc/sdk-cli-reference.md
+https://banzaicloud.com/blog/operator-sdk/
+
+Super..
+https://docs.okd.io/latest/operators/osdk-getting-started.html
+https://github.com/operator-framework/operator-sdk/blob/master/example/memcached-operator/memcached_controller.go.tmpl
+
+https://access.redhat.com/documentation/en-us/openshift_container_platform/4.1/html/applications/operator-sdk
+
+export GOPATH=/Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/05-greetings-operator-go
+mkdir $GOPATH/src
+cd $GOPATH/src
+operator-sdk new greetings-operator
+cd greetings-operator
+
+jeyas-mbp:src jeyagandhi$ tree -I vendor
+.
+└── greetings-operator
+    ├── build
+    │   ├── Dockerfile
+    │   └── bin
+    │       ├── entrypoint
+    │       └── user_setup
+    ├── cmd
+    │   └── manager
+    │       └── main.go
+    ├── deploy
+    │   ├── operator.yaml
+    │   ├── role.yaml
+    │   ├── role_binding.yaml
+    │   └── service_account.yaml
+    ├── go.mod
+    ├── go.sum
+    ├── pkg
+    │   ├── apis
+    │   │   └── apis.go
+    │   └── controller
+    │       └── controller.go
+    ├── tools.go
+    └── version
+        └── version.go
+
+
+cd greetings-operator/
+
+
+Define the Kubernetes resources to watch
+
+The main.go under cmd/<operator-project-name> is our main point of entry from which we start and initialize the operator. This is the place to configure the list of resource types the operator is interested in getting notifications about from Kubernetes.
+Define the operator logic in a designated handler
+
+
+Each custom resource has structure. The structure of the custom resource handled by our operator must be specified in types.go, which resides under pkg/apis/<api-group>/<version>. The Spec field is where we define the structure for the specifications of that custom resource. There is also a Status field that is meant to be populated with information which describes the state of the custom resource object.
+
+The Operator SDK exposes functions for performing CRUD operations on Kubernetes resources:
+
+    query package - defines functions for retrieving Kubernetes resources available in the cluster
+    action package - defines functions for creating, updating and deleting Kubernetes resources
+Update and generate code for custom resources
+
+Whenever there are changes to types.go, generated code must be refreshed that depends on types defined in types.go.
+
+Adding a CRD and a controller
+
+# Add a new API for the custom resource PodSet
+$ operator-sdk add api --api-version=app.example.com/v1alpha1 --kind=Greetings
+
+# Add a new controller that watches for PodSet
+$ operator-sdk add controller --api-version=app.example.com/v1alpha1 --kind=Greetings
+
+cat deploy/crds/app.example.com_greetings_crd.yaml 
+cat deploy/crds/app.example.com_v1alpha1_greetings_cr.yaml
+
+
+Add the below 2 fields in pkg/apis/app/v1alpha1/greetings_types.go
+
+type GreetingsSpec struct {
+  Replicas int32 `json:"replicas"`
+}
+
+type GreetingsStatus struct {
+  PodNames []string `json:"podNames"`
+}
+
+After modifying the *_types.go file always run the following command to update the generated code for that resource type:
+operator-sdk generate k8s
+
+Also run the following command in order to automatically generate the CRDs:
+operator-sdk generate crds
+
+You can see the changes applied in deploy/crds/cache.example.com_memcacheds_crd.yaml
+
+operator-sdk olm-catalog gen-csv --csv-version 0.0.1 --update-crds
+operator-courier verify --ui_validate_io deploy/olm-catalog/greetings-operator/
+
+operator-sdk build gandhicloud/my-greetings-operator
+
+export QUAY_USERNAME=gandhicloudquay
+export QUAY_PASSWORD=A1/QCZznB7LB0dET/jmEDPSlHG1SjyERv/cLF9kSKUAD9YzoiOVPqNe0gSEavaBV
+
+
+QUAY_TOKEN=$(curl -sH "Content-Type: application/json" -XPOST https://quay.io/cnr/api/v1/users/login -d '
+{
+    "user": {
+        "username": "'"${QUAY_USERNAME}"'",
+        "password": "'"${QUAY_PASSWORD}"'"
+    }
+}' | jq -r '.token')
+
+export OPERATOR_DIR=deploy/olm-catalog/greetings-operator/
+export QUAY_NAMESPACE=gandhicloudquay
+export PACKAGE_NAME=greetings-operator
+export PACKAGE_VERSION=0.0.1
+export TOKEN=$QUAY_TOKEN
+operator-courier push "$OPERATOR_DIR" "$QUAY_NAMESPACE" "$PACKAGE_NAME" "$PACKAGE_VERSION" "$TOKEN"
+
+
+make the image as public in quay.io
+
+
+oc login -u kubeadmin -p UcfhMX "https://api.ganwhite.os.fyre.ibm.com:6443"
+
+kubectl apply -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/05-greetings-operator-go/deployment/operator-source.yaml
+kubectl delete -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/05-greetings-operator-go/deployment/operator-source.yaml
+
+kubectl apply -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/05-greetings-operator-go/deployment/operator-source.yaml
+
+kubectl apply -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/05-greetings-operator-go/deployment/operator-cr.yaml
+
+kubectl get operatorsource greetings-operator -n openshift-marketplace
+kubectl get catalogsource -n openshift-marketplace
+
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ kubectl get operatorsource greetings-operator -n openshift-marketplace
+NAME                 TYPE          ENDPOINT              REGISTRY          DISPLAYNAME             PUBLISHER   STATUS      MESSAGE                                       AGE
+greetings-operator   appregistry   https://quay.io/cnr   gandhicloudquay   G greetings Operators   G Lab       Succeeded   The object has been successfully reconciled   33m
+
+
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ kubectl get catalogsource -n openshift-marketplace
+NAME                          DISPLAY                                TYPE   PUBLISHER   AGE
+certified-operators           Certified Operators                    grpc   Red Hat     62d
+community-operators           Community Operators                    grpc   Red Hat     62d
+greetings-operator            G greetings Operators                  grpc   G Lab       34m
+ibm-cp-applications-catalog   Cloud Pak for Applications Operators   grpc   IBM         29d
+podset-operator               G PodSet Operators                     grpc   G           44h
+redhat-operators              Red Hat Operators                      grpc   Red Hat     62d
+
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get installplan -n g-operators
+NAME            CSV                         APPROVAL    APPROVED
+install-svqc4   greetings-operator.v0.0.1   Automatic   true
+
+oc get subscription -n g-operators
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get subscription -n g-operators
+NAME                 PACKAGE              SOURCE            CHANNEL
+greetings-operator   greetings-operator   podset-operator   alpha
+
+$ oc get ClusterServiceVersion 
+oc get installplan 
+ oc describe installplan install-svqc4
+
+ oc delete installplan install-svqc4
+
+
+thub.com/a/b/d"}}, "maintainers":[]interface {}{map[string]interface {}{"email":"admin@agmail.com", "name":"G-Lab-admin"}}, "maturity":"alpha", "provider":map[string]interface {}{"name":"G-Lab"}, "replaces":"greetings-operator.v0.0.0", "version":"0.0.1"}}: validation failure list:
+spec.customresourcedefinitions.owned.displayName in body is required
+
+========================================
+oc delete operatorSource greetings-operator -n openshift-marketplace
+oc delete operatorSource podset-operator -n openshift-marketplace
+
+========================================
+
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc describe subscription greetings-operator -n g-operators
+
+    Type:                  CatalogSourcesUnhealthy
+    Last Transition Time:  2020-02-19T09:49:30Z
+    Reason:                InstallComponentFailed
+    Status:                True
+    Type:                  InstallPlanFailed
+
+    ===============
+
+    Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get all -n g-operators
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/greetings-operator-55b7b5bb45-x4kgk   1/1     Running   0          96s
+
+NAME                                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE
+service/greetings-operator-metrics   ClusterIP   172.30.222.22   <none>        8383/TCP,8686/TCP   62s
+
+NAME                                 READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/greetings-operator   1/1     1            1           106s
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/greetings-operator-55b7b5bb45   1         1         1       102s
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get greetings 
+No resources found.
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get greetings -n g-operators
+No resources found.
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ kubectl get operatorsource greetings-operator -n openshift-marketplace
+
+NAME                 TYPE          ENDPOINT              REGISTRY          DISPLAYNAME             PUBLISHER   STATUS      MESSAGE                                       AGE
+greetings-operator   appregistry   https://quay.io/cnr   gandhicloudquay   G greetings Operators   G Lab       Succeeded   The object has been successfully reconciled   164m
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ 
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ 
+
+
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ 
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ kubectl get catalogsource -n openshift-marketplace
+NAME                          DISPLAY                                TYPE   PUBLISHER   AGE
+certified-operators           Certified Operators                    grpc   Red Hat     62d
+community-operators           Community Operators                    grpc   Red Hat     62d
+greetings-operator            G greetings Operators                  grpc   G Lab       165m
+ibm-cp-applications-catalog   Cloud Pak for Applications Operators   grpc   IBM         30d
+podset-operator               G PodSet Operators                     grpc   G           2d4h
+redhat-operators              Red Hat Operators                      grpc   Red Hat     62d
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ 
+
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get ClusterServiceVersion 
+NAME                                         DISPLAY                          VERSION               REPLACES                                     PHASE
+appsody-operator.v0.2.2                      Appsody Operator                 0.2.2                 appsody-operator.v0.2.1                      Succeeded
+elasticsearch-operator.4.2.18-202002031246   Elasticsearch Operator           4.2.18-202002031246   elasticsearch-operator.4.2.15-202001171551   Succeeded
+greetings-operator.v0.0.1                    Greetings Operator               0.0.1                 greetings-operator.v0.0.0                    Succeeded
+jaeger-operator.v1.13.1                      Jaeger Operator                  1.13.1                                                             Succeeded
+kiali-operator.v1.0.7                        Kiali Operator                   1.0.7                 kiali-operator.v1.0.6                        Succeeded
+knative-eventing-operator.v0.9.0             Knative Eventing Operator        0.9.0                 knative-eventing-operator.v0.8.0             Succeeded
+openshift-pipelines-operator.v0.7.0          OpenShift Pipelines Operator     0.7.0                 openshift-pipelines-operator.v0.5.2          Succeeded
+serverless-operator.v1.1.0                   OpenShift Serverless Operator    1.1.0                 serverless-operator.v1.0.0                   Succeeded
+servicemeshoperator.v1.0.2                   Red Hat OpenShift Service Mesh   1.0.2                 servicemeshoperator.v1.0.1                   Succeeded
+
+
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get installplan 
+
+NAME            CSV                         APPROVAL    APPROVED
+install-sjcqq   greetings-operator.v0.0.1   Automatic   true
+
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get pods -n openshift-marketplace
+NAME                                           READY   STATUS    RESTARTS   AGE
+certified-operators-647b556d56-xfwr7           1/1     Running   0          18h
+community-operators-dc6949966-rft6p            1/1     Running   0          3h31m
+greetings-operator-5d8ff65d64-4g9fx            1/1     Running   0          169m
+ibm-cp-applications-catalog-567749957c-jj7df   1/1     Running   6          30d
+marketplace-operator-5c846b89cb-4zzvr          1/1     Running   5          46h
+podset-operator-7774f75697-ddcxs               1/1     Running   1          22h
+redhat-operators-596b67f886-ptzss              1/1     Running   1          8h
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ 
+
+
+==================================== after instllaing the operator.......
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ kubectl apply -f /Users/jeyagandhi/Gandhi/Projects/Apps/sample-apps/01-operator/05-greetings-operator-go/deployment/operator-source.yaml
+operatorsource.operators.coreos.com/greetings-operator created
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get pods -n openshift-marketplace
+NAME                                           READY   STATUS    RESTARTS   AGE
+certified-operators-647b556d56-xfwr7           1/1     Running   0          18h
+community-operators-dc6949966-rft6p            1/1     Running   0          3h51m
+greetings-operator-5587d88c44-9t2gz            1/1     Running   0          22s
+ibm-cp-applications-catalog-567749957c-jj7df   1/1     Running   6          30d
+marketplace-operator-5c846b89cb-4zzvr          1/1     Running   5          46h
+redhat-operators-596b67f886-ptzss              1/1     Running   1          8h
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ kubectl get catalogsource -n openshift-marketplace
+NAME                          DISPLAY                                TYPE   PUBLISHER   AGE
+certified-operators           Certified Operators                    grpc   Red Hat     62d
+community-operators           Community Operators                    grpc   Red Hat     62d
+greetings-operator            G greetings Operators                  grpc   G Lab       33s
+ibm-cp-applications-catalog   Cloud Pak for Applications Operators   grpc   IBM         30d
+redhat-operators              Red Hat Operators                      grpc   Red Hat     62d
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get ClusterServiceVersion 
+NAME                                         DISPLAY                          VERSION               REPLACES                                     PHASE
+appsody-operator.v0.2.2                      Appsody Operator                 0.2.2                 appsody-operator.v0.2.1                      Succeeded
+elasticsearch-operator.4.2.18-202002031246   Elasticsearch Operator           4.2.18-202002031246   elasticsearch-operator.4.2.15-202001171551   Succeeded
+jaeger-operator.v1.13.1                      Jaeger Operator                  1.13.1                                                             Succeeded
+kiali-operator.v1.0.7                        Kiali Operator                   1.0.7                 kiali-operator.v1.0.6                        Succeeded
+knative-eventing-operator.v0.9.0             Knative Eventing Operator        0.9.0                 knative-eventing-operator.v0.8.0             Succeeded
+openshift-pipelines-operator.v0.7.0          OpenShift Pipelines Operator     0.7.0                 openshift-pipelines-operator.v0.5.2          Succeeded
+serverless-operator.v1.1.0                   OpenShift Serverless Operator    1.1.0                 serverless-operator.v1.0.0                   Succeeded
+servicemeshoperator.v1.0.2                   Red Hat OpenShift Service Mesh   1.0.2                 servicemeshoperator.v1.0.1                   Succeeded
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get all -n g-operator
+No resources found.
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$  oc get subscription -n g-operators
+No resources found.
+================================================================ after installing operator through ui
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get all -n g-operators
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/greetings-operator-55b7b5bb45-8fnmt   1/1     Running   0          15s
+
+NAME                                 READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/greetings-operator   1/1     1            1           17s
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/greetings-operator-55b7b5bb45   1         1         1       17s
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get subscription -n g-operators
+NAME                 PACKAGE              SOURCE               CHANNEL
+greetings-operator   greetings-operator   greetings-operator   alpha
+
+================================================================ after installing kind:greetings
+
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$ oc get all 
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/example-greetings-pod                 1/1     Running   0          58s
+pod/greetings-operator-55b7b5bb45-8fnmt   1/1     Running   0          7m5s
+
+NAME                                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
+service/greetings-operator-metrics   ClusterIP   172.30.116.198   <none>        8383/TCP,8686/TCP   6m38s
+
+NAME                                 READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/greetings-operator   1/1     1            1           7m7s
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/greetings-operator-55b7b5bb45   1         1         1       7m8s

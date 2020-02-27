@@ -1,0 +1,7 @@
+  
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: g-greetings-operator-app-pro
+  labels:
+    app:  g-greetings-operator-app-app

@@ -1,0 +1,95 @@
+Jeyas-MacBook-Pro:greetings-operator jeyagandhi$  oc describe installplan install-svqc4
+Name:         install-svqc4
+Namespace:    g-operators
+Labels:       <none>
+Annotations:  <none>
+API Version:  operators.coreos.com/v1alpha1
+Kind:         InstallPlan
+Metadata:
+  Creation Timestamp:  2020-02-19T09:49:28Z
+  Generate Name:       install-
+  Generation:          1
+  Owner References:
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  false
+    Controller:            false
+    Kind:                  Subscription
+    Name:                  greetings-operator
+    UID:                   1e699ebe-52fd-11ea-b846-00000a100b33
+  Resource Version:        51093133
+  Self Link:               /apis/operators.coreos.com/v1alpha1/namespaces/g-operators/installplans/install-svqc4
+  UID:                     1e96a810-52fd-11ea-8b76-00000a100bca
+Spec:
+  Approval:  Automatic
+  Approved:  true
+  Cluster Service Version Names:
+    greetings-operator.v0.0.1
+Status:
+  Catalog Sources:
+    podset-operator
+  Conditions:
+    Last Transition Time:  2020-02-19T09:49:28Z
+    Last Update Time:      2020-02-19T09:49:28Z
+    Message:               error creating csv greetings-operator.v0.0.1: ClusterServiceVersion.operators.coreos.com "greetings-operator.v0.0.1" is invalid: []: Invalid value: map[string]interface {}{"apiVersion":"operators.coreos.com/v1alpha1", "kind":"ClusterServiceVersion", "metadata":map[string]interface {}{"annotations":map[string]interface {}{"alm-examples":"[\n  {\n    \"apiVersion\": \"app.example.com/v1alpha1\",\n    \"kind\": \"Greetings\",\n    \"metadata\": {\n      \"name\": \"example-greetings\"\n    },\n    \"spec\": {\n      \"size\": 3\n    }\n  }\n]", "capabilities":"Basic Install", "categories":"Integration & Delivery", "certified":"false", "containerImage":"gandhicloud/my-greetings-operator", "createdAt":"2020-02-18 01:00:00", "description":"Kubernetes native operator which fully manages Greetings on Kubernetes.", "repository":"https://github.com/a/b", "support":"G-Cloud"}, "creationTimestamp":"2020-02-19T09:49:29Z", "generation":1, "name":"greetings-operator.v0.0.1", "namespace":"g-operators", "uid":"1fa7511e-52fd-11ea-8b76-00000a100bca"}, "spec":map[string]interface {}{"apiservicedefinitions":map[string]interface {}{}, "customresourcedefinitions":map[string]interface {}{"owned":[]interface {}{map[string]interface {}{"description":"Greetings is the Schema for the greetings API", "kind":"Greetings", "name":"greetings.app.example.com", "version":"v1alpha1"}}}, "description":"Placeholder description", "displayName":"Greetings Operator", "icon":[]interface {}{map[string]interface {}{"base64data":"I=", "mediatype":"image/png"}}, "install":map[string]interface {}{"spec":map[string]interface {}{"deployments":[]interface {}{map[string]interface {}{"name":"greetings-operator", "spec":map[string]interface {}{"replicas":1, "selector":map[string]interface {}{"matchLabels":map[string]interface {}{"name":"greetings-operator"}}, "strategy":map[string]interface {}{}, "template":map[string]interface {}{"metadata":map[string]interface {}{"labels":map[string]interface {}{"name":"greetings-operator"}}, "spec":map[string]interface {}{"containers":[]interface {}{map[string]interface {}{"command":[]interface {}{"greetings-operator"}, "env":[]interface {}{map[string]interface {}{"name":"WATCH_NAMESPACE", "valueFrom":map[string]interface {}{"fieldRef":map[string]interface {}{"fieldPath":"metadata.annotations['olm.targetNamespaces']"}}}, map[string]interface {}{"name":"POD_NAME", "valueFrom":map[string]interface {}{"fieldRef":map[string]interface {}{"fieldPath":"metadata.name"}}}, map[string]interface {}{"name":"OPERATOR_NAME", "value":"greetings-operator"}}, "image":"gandhicloud/my-greetings-operator", "imagePullPolicy":"Always", "name":"greetings-operator", "resources":map[string]interface {}{}}, map[string]interface {}{"args":[]interface {}{"-c", "echo \"Started ......\"\n\ncp /app-files/* /html\n\necho 'after copyy .........'\nls -la /app-files/\nls -la /html\n\necho \"Completed ......\" \n"}, "command":[]interface {}{"/bin/bash"}, "env":[]interface {}{map[string]interface {}{"name":"res_namespace", "valueFrom":map[string]interface {}{"fieldRef":map[string]interface {}{"fieldPath":"metadata.namespace"}}}}, "image":"gandhicloud/greetings-operator-main", "name":"download-kubectl-deployment-files", "resources":map[string]interface {}{}, "volumeMounts":[]interface {}{map[string]interface {}{"mountPath":"/usr/share/html", "name":"html"}}}, map[string]interface {}{"args":[]interface {}{"apply", "-f", "html", "-R", "--validate=false"}, "command":[]interface {}{"kubectl"}, "image":"lachlanevenson/k8s-kubectl", "name":"apply-kubectl-deployment-files", "resources":map[string]interface {}{}, "volumeMounts":[]interface {}{map[string]interface {}{"mountPath":"/html", "name":"html"}}}}, "serviceAccountName":"greetings-operator", "volumes":[]interface {}{map[string]interface {}{"emptyDir":map[string]interface {}{}, "name":"html"}}}}}}}, "permissions":[]interface {}{map[string]interface {}{"rules":[]interface {}{map[string]interface {}{"apiGroups":[]interface {}{""}, "resources":[]interface {}{"pods", "services", "services/finalizers", "endpoints", "persistentvolumeclaims", "events", "configmaps", "secrets"}, "verbs":[]interface {}{"create", "delete", "get", "list", "patch", "update", "watch"}}, map[string]interface {}{"apiGroups":[]interface {}{"apps"}, "resources":[]interface {}{"deployments", "daemonsets", "replicasets", "statefulsets"}, "verbs":[]interface {}{"create", "delete", "get", "list", "patch", "update", "watch"}}, map[string]interface {}{"apiGroups":[]interface {}{"monitoring.coreos.com"}, "resources":[]interface {}{"servicemonitors"}, "verbs":[]interface {}{"get", "create"}}, map[string]interface {}{"apiGroups":[]interface {}{"apps"}, "resourceNames":[]interface {}{"greetings-operator"}, "resources":[]interface {}{"deployments/finalizers"}, "verbs":[]interface {}{"update"}}, map[string]interface {}{"apiGroups":[]interface {}{""}, "resources":[]interface {}{"pods"}, "verbs":[]interface {}{"get"}}, map[string]interface {}{"apiGroups":[]interface {}{"apps"}, "resources":[]interface {}{"replicasets", "deployments"}, "verbs":[]interface {}{"get"}}, map[string]interface {}{"apiGroups":[]interface {}{"app.example.com"}, "resources":[]interface {}{"*"}, "verbs":[]interface {}{"create", "delete", "get", "list", "patch", "update", "watch"}}}, "serviceAccountName":"greetings-operator"}}}, "strategy":"deployment"}, "installModes":[]interface {}{map[string]interface {}{"supported":true, "type":"OwnNamespace"}, map[string]interface {}{"supported":true, "type":"SingleNamespace"}, map[string]interface {}{"supported":false, "type":"MultiNamespace"}, map[string]interface {}{"supported":true, "type":"AllNamespaces"}}, "links":[]interface {}{map[string]interface {}{"name":"GitHub", "url":"https://github.com/a/b/d"}}, "maintainers":[]interface {}{map[string]interface {}{"email":"admin@agmail.com", "name":"G-Lab-admin"}}, "maturity":"alpha", "provider":map[string]interface {}{"name":"G-Lab"}, "replaces":"greetings-operator.v0.0.0", "version":"0.0.1"}}: validation failure list:
+spec.customresourcedefinitions.owned.displayName in body is required
+    Reason:  InstallComponentFailed
+    Status:  False
+    Type:    Installed
+  Phase:     Failed
+  Plan:
+    Resolving:  greetings-operator.v0.0.1
+    Resource:
+      Group:     operators.coreos.com
+      Kind:      ClusterServiceVersion
+      Manifest:  {"kind":"ClusterServiceVersion","apiVersion":"operators.coreos.com/v1alpha1","metadata":{"name":"greetings-operator.v0.0.1","namespace":"g-operators","creationTimestamp":null,"annotations":{"alm-examples":"[\n  {\n    \"apiVersion\": \"app.example.com/v1alpha1\",\n    \"kind\": \"Greetings\",\n    \"metadata\": {\n      \"name\": \"example-greetings\"\n    },\n    \"spec\": {\n      \"size\": 3\n    }\n  }\n]","capabilities":"Basic Install","categories":"Integration \u0026 Delivery","certified":"false","containerImage":"gandhicloud/my-greetings-operator","createdAt":"2020-02-18 01:00:00","description":"Kubernetes native operator which fully manages Greetings on Kubernetes.","repository":"https://github.com/a/b","support":"G-Cloud"}},"spec":{"install":{"strategy":"deployment","spec":{"deployments":[{"name":"greetings-operator","spec":{"replicas":1,"selector":{"matchLabels":{"name":"greetings-operator"}},"strategy":{},"template":{"metadata":{"labels":{"name":"greetings-operator"}},"spec":{"containers":[{"command":["greetings-operator"],"env":[{"name":"WATCH_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.annotations['olm.targetNamespaces']"}}},{"name":"POD_NAME","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}},{"name":"OPERATOR_NAME","value":"greetings-operator"}],"image":"gandhicloud/my-greetings-operator","imagePullPolicy":"Always","name":"greetings-operator","resources":{}},{"args":["-c","echo \"Started ......\"\n\ncp /app-files/* /html\n\necho 'after copyy .........'\nls -la /app-files/\nls -la /html\n\necho \"Completed ......\" \n"],"command":["/bin/bash"],"env":[{"name":"res_namespace","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"image":"gandhicloud/greetings-operator-main","name":"download-kubectl-deployment-files","resources":{},"volumeMounts":[{"mountPath":"/usr/share/html","name":"html"}]},{"args":["apply","-f","html","-R","--validate=false"],"command":["kubectl"],"image":"lachlanevenson/k8s-kubectl","name":"apply-kubectl-deployment-files","resources":{},"volumeMounts":[{"mountPath":"/html","name":"html"}]}],"serviceAccountName":"greetings-operator","volumes":[{"emptyDir":{},"name":"html"}]}}}}],"permissions":[{"rules":[{"apiGroups":[""],"resources":["pods","services","services/finalizers","endpoints","persistentvolumeclaims","events","configmaps","secrets"],"verbs":["create","delete","get","list","patch","update","watch"]},{"apiGroups":["apps"],"resources":["deployments","daemonsets","replicasets","statefulsets"],"verbs":["create","delete","get","list","patch","update","watch"]},{"apiGroups":["monitoring.coreos.com"],"resources":["servicemonitors"],"verbs":["get","create"]},{"apiGroups":["apps"],"resourceNames":["greetings-operator"],"resources":["deployments/finalizers"],"verbs":["update"]},{"apiGroups":[""],"resources":["pods"],"verbs":["get"]},{"apiGroups":["apps"],"resources":["replicasets","deployments"],"verbs":["get"]},{"apiGroups":["app.example.com"],"resources":["*"],"verbs":["create","delete","get","list","patch","update","watch"]}],"serviceAccountName":"greetings-operator"}]}},"version":"0.0.1","maturity":"alpha","customresourcedefinitions":{"owned":[{"name":"greetings.app.example.com","version":"v1alpha1","kind":"Greetings","description":"Greetings is the Schema for the greetings API"}]},"apiservicedefinitions":{},"displayName":"Greetings Operator","description":"Placeholder description","maintainers":[{"name":"G-Lab-admin","email":"admin@agmail.com"}],"provider":{"name":"G-Lab"},"links":[{"name":"GitHub","url":"https://github.com/a/b/d"}],"icon":[{"base64data":"iVBYII=","mediatype":"image/png"}],"installModes":[{"type":"OwnNamespace","supported":true},{"type":"SingleNamespace","supported":true},{"type":"MultiNamespace","supported":false},{"type":"AllNamespaces","supported":true}],"replaces":"greetings-operator.v0.0.0"},"status":{"lastUpdateTime":null,"lastTransitionTime":null,"certsLastUpdated":null,"certsRotateAt":null}}
+
+      Name:              greetings-operator.v0.0.1
+      Source Name:       podset-operator
+      Source Namespace:  openshift-marketplace
+      Version:           v1alpha1
+    Status:              Unknown
+    Resolving:           greetings-operator.v0.0.1
+    Resource:
+      Group:     apiextensions.k8s.io
+      Kind:      CustomResourceDefinition
+      Manifest:  {"apiVersion":"apiextensions.k8s.io/v1beta1","kind":"CustomResourceDefinition","metadata":{"name":"greetings.app.example.com"},"spec":{"group":"app.example.com","names":{"kind":"Greetings","listKind":"GreetingsList","plural":"greetings","singular":"greetings"},"scope":"Namespaced","subresources":{"status":{}},"validation":{"openAPIV3Schema":{"description":"Greetings is the Schema for the greetings API","properties":{"apiVersion":{"description":"APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources","type":"string"},"kind":{"description":"Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds","type":"string"},"metadata":{"type":"object"},"spec":{"description":"GreetingsSpec defines the desired state of Greetings","properties":{"replicas":{"format":"int32","type":"integer"}},"required":["replicas"],"type":"object"},"status":{"description":"GreetingsStatus defines the observed state of Greetings","type":"object"}},"type":"object"}},"version":"v1alpha1","versions":[{"name":"v1alpha1","served":true,"storage":true}]}}
+
+      Name:              greetings.app.example.com
+      Source Name:       podset-operator
+      Source Namespace:  openshift-marketplace
+      Version:           v1beta1
+    Status:              Unknown
+    Resolving:           greetings-operator.v0.0.1
+    Resource:
+      Group:     
+      Kind:      ServiceAccount
+      Manifest:  {"metadata":{"name":"greetings-operator","namespace":"g-operators","creationTimestamp":null,"ownerReferences":[{"apiVersion":"operators.coreos.com/v1alpha1","kind":"ClusterServiceVersion","name":"greetings-operator.v0.0.1","uid":"","controller":false,"blockOwnerDeletion":false}]}}
+
+      Name:              greetings-operator
+      Source Name:       podset-operator
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Unknown
+    Resolving:           greetings-operator.v0.0.1
+    Resource:
+      Group:     rbac.authorization.k8s.io
+      Kind:      Role
+      Manifest:  {"metadata":{"name":"greetings-operator.v0.0.1-hswsv","namespace":"g-operators","creationTimestamp":null,"labels":{"olm.owner":"greetings-operator.v0.0.1","olm.owner.kind":"ClusterServiceVersion","olm.owner.namespace":"g-operators"},"ownerReferences":[{"apiVersion":"operators.coreos.com/v1alpha1","kind":"ClusterServiceVersion","name":"greetings-operator.v0.0.1","uid":"","controller":false,"blockOwnerDeletion":false}]},"rules":[{"verbs":["create","delete","get","list","patch","update","watch"],"apiGroups":[""],"resources":["pods","services","services/finalizers","endpoints","persistentvolumeclaims","events","configmaps","secrets"]},{"verbs":["create","delete","get","list","patch","update","watch"],"apiGroups":["apps"],"resources":["deployments","daemonsets","replicasets","statefulsets"]},{"verbs":["get","create"],"apiGroups":["monitoring.coreos.com"],"resources":["servicemonitors"]},{"verbs":["update"],"apiGroups":["apps"],"resources":["deployments/finalizers"],"resourceNames":["greetings-operator"]},{"verbs":["get"],"apiGroups":[""],"resources":["pods"]},{"verbs":["get"],"apiGroups":["apps"],"resources":["replicasets","deployments"]},{"verbs":["create","delete","get","list","patch","update","watch"],"apiGroups":["app.example.com"],"resources":["*"]}]}
+
+      Name:              greetings-operator.v0.0.1-hswsv
+      Source Name:       podset-operator
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Unknown
+    Resolving:           greetings-operator.v0.0.1
+    Resource:
+      Group:     rbac.authorization.k8s.io
+      Kind:      RoleBinding
+      Manifest:  {"metadata":{"name":"greetings-operator.v0.0.1-hswsv-greetings-operator-dmwbb","namespace":"g-operators","creationTimestamp":null,"labels":{"olm.owner":"greetings-operator.v0.0.1","olm.owner.kind":"ClusterServiceVersion","olm.owner.namespace":"g-operators"},"ownerReferences":[{"apiVersion":"operators.coreos.com/v1alpha1","kind":"ClusterServiceVersion","name":"greetings-operator.v0.0.1","uid":"","controller":false,"blockOwnerDeletion":false}]},"subjects":[{"kind":"ServiceAccount","name":"greetings-operator","namespace":"g-operators"}],"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"Role","name":"greetings-operator.v0.0.1-hswsv"}}
+
+      Name:              greetings-operator.v0.0.1-hswsv-greetings-operator-dmwbb
+      Source Name:       podset-operator
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Unknown
+Events:                  <none>
